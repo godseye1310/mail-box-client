@@ -3,6 +3,7 @@ import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import SignInPage from "./pages/SignInPage";
 import RootLayout from "./components/Layout/RootLayout";
 import Home from "./pages/Home";
+import MailPage from "./pages/MailPage";
 
 const App = () => {
 	const router = createBrowserRouter([
@@ -13,6 +14,8 @@ const App = () => {
 			children: [
 				{ path: "/", element: <SignInPage /> },
 				{ path: "/home", element: <Home /> },
+
+				{ path: "/mail", element: <MailPage /> },
 			],
 		},
 	]);

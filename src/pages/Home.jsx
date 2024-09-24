@@ -1,4 +1,5 @@
 import React from "react";
+import { Link } from "react-router-dom";
 
 const Home = () => {
 	// const isLoggedIn =
@@ -11,7 +12,14 @@ const Home = () => {
 				</h1>
 			</div>
 
-			<div className="py-5"></div>
+			<div className="py-5">
+				<Link
+					to="/mail"
+					className="bg-rose-500 border-none outline-none text-white px-3 py-2 rounded-xl"
+				>
+					Create Mail
+				</Link>
+			</div>
 		</div>
 	);
 };

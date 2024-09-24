@@ -41,7 +41,9 @@ const AuthForm = () => {
 				console.log(response.data);
 
 				const token = response.data.idToken;
-				handleLogIn(token);
+				const email = response.data.email;
+
+				handleLogIn(token, email);
 
 				naviateTo("/home", { replace: true });
 
@@ -74,7 +76,9 @@ const AuthForm = () => {
 					console.log("successfully logged In");
 
 					const token = response.data.idToken;
-					handleLogIn(token);
+					const email = response.data.email;
+
+					handleLogIn(token, email);
 
 					console.log("User has successfully signed up.");
 					setEmail("");
