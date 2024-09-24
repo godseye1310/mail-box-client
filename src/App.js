@@ -1,14 +1,22 @@
 import React from "react";
-import AuthForm from "./components/Auth/Auth";
-import Header from "./components/Layout/Header";
+import { createBrowserRouter, RouterProvider } from "react-router-dom";
+import SignInPage from "./pages/SignInPage";
+import RootLayout from "./components/Layout/RootLayout";
+import Home from "./pages/Home";
 
 const App = () => {
-	return (
-		<div className="relative h-full w-full bg-gray-100">
-			<Header />
-			<AuthForm />
-		</div>
-	);
+	const router = createBrowserRouter([
+		{
+			path: "/",
+			element: <RootLayout />,
+			id: "root",
+			children: [
+				{ path: "/", element: <SignInPage /> },
+				{ path: "/home", element: <Home /> },
+			],
+		},
+	]);
+	return <RouterProvider router={router} />;
 };
 
 export default App;

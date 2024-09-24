@@ -2,6 +2,9 @@ import axios from "axios";
 import React, { useState } from "react";
 import Input from "../UI/Input";
 
+import useAuth from "../../store/auth-context";
+import { useNavigate } from "react-router-dom";
+
 const API_KEY = "AIzaSyB84u4X10RE3cGQMqs7sibXk-m2JvzkMXg";
 const SIGNUP_URL = `https://identitytoolkit.googleapis.com/v1/accounts:signUp?key=${API_KEY}`;
 const SIGNIN_URL = `https://identitytoolkit.googleapis.com/v1/accounts:signInWithPassword?key=${API_KEY}`;
@@ -13,6 +16,10 @@ const AuthForm = () => {
 	const [errorMessage, setErrorMessage] = useState("");
 	const [isErrorVisible, setIsErrorVisible] = useState(false);
 	const [isLoading, setIsLoading] = useState(false);
+
+	const { handleLogIn } = useAuth();
+
+	const naviateTo = useNavigate();
 
 	const isSignUpHandler = () => {
 		setIsSignUp((prev) => !prev);
@@ -31,13 +38,12 @@ const AuthForm = () => {
 		if (!isSignUp) {
 			try {
 				const response = await axios.post(SIGNIN_URL, userAuthData);
-				// console.log(response.data);
+				console.log(response.data);
 
 				const token = response.data.idToken;
-				// dispatch(authActions.handleLogIn(token));
-				// dispatch(authActions.setUserID(response.data.localId));
-				localStorage.setItem("token", token);
-				// handlePopupDisplay();
+				handleLogIn(token);
+
+				naviateTo("/home", { replace: true });
 
 				setEmail("");
 				setPassword("");
@@ -63,15 +69,18 @@ const AuthForm = () => {
 					document.getElementById("confirm_password").value
 				) {
 					const response = await axios.post(SIGNUP_URL, userAuthData);
+
+					console.log(response.data);
+					console.log("successfully logged In");
+
+					const token = response.data.idToken;
+					handleLogIn(token);
+
+					console.log("User has successfully signed up.");
 					setEmail("");
 					setPassword("");
-					console.log(response.data);
-					const token = response.data.idToken;
-					// dispatch(authActions.handleLogIn(token));
-					// dispatch(authActions.setUserID(response.data.localId));
-					console.log("User has successfully signed up.");
-
-					localStorage.setItem("token", token);
+					naviateTo("/home", { replace: true });
+					//
 				} else {
 					setErrorMessage("* Password doesnt Match");
 					setIsErrorVisible(true);
