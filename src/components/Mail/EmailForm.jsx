@@ -1,6 +1,9 @@
 import React, { useState } from "react";
 import useAuth from "../../store/auth-context";
 import axios from "axios";
+import { EditorState, convertToRaw } from "draft-js";
+import { Editor } from "react-draft-wysiwyg";
+import "react-draft-wysiwyg/dist/react-draft-wysiwyg.css";
 
 const RTDB_URL = `https://mail-box-client-38ab9-default-rtdb.asia-southeast1.firebasedatabase.app/`;
 
@@ -8,6 +11,9 @@ const EmailForm = () => {
 	const [email, setEmail] = useState("");
 	const [subject, setSubject] = useState("");
 	const [message, setMessage] = useState("");
+	const [messageEditorState, setMessageEditorState] = useState(
+		EditorState.createEmpty()
+	);
 
 	const { userEmail } = useAuth();
 
