@@ -20,7 +20,7 @@ const Home = () => {
 				</div>
 
 				{/* Outlet for rendering inbox/sent sub-routes */}
-				<div className="mt-4 flex-grow flex flex-col">
+				<div className="pt-4 flex-grow flex flex-col">
 					<Outlet />
 				</div>
 			</div>

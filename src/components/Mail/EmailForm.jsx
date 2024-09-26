@@ -41,7 +41,7 @@ const EmailForm = () => {
 			// Store in the receiver's Inbox
 			const receiverResponse = await axios.post(
 				`${RTDB_URL}/users/${cleanEmail}/Inbox.json`,
-				emailData
+				{ ...emailData, isRead: false }
 			);
 			const emailId = receiverResponse.data.name; // Use Firebase response ID
 

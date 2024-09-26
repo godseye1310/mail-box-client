@@ -12,9 +12,14 @@ import useAuth from "./store/auth-context";
 import About from "./pages/About";
 import Inbox from "./pages/Inbox";
 import Sentbox from "./pages/Sentbox";
+import MailView from "./components/Mail/MailView";
+// import useInbox from "./store/inbox-context";
 
 const App = () => {
 	const { isLoggedIn } = useAuth();
+
+	// const { inbox } = useInbox();
+	// console.log(inbox);
 
 	const router = createBrowserRouter([
 		{
@@ -35,8 +40,15 @@ const App = () => {
 					element: isLoggedIn ? <Home /> : <Navigate to="/" />,
 					children: [
 						{ path: "inbox", element: <Inbox /> }, // Inbox sub-route
+						{ path: "inbox/:inboxmailID", element: <MailView /> },
 						{ path: "sent", element: <Sentbox /> }, // Sent sub-route
-						{ path: "", element: <Navigate to="inbox" /> },
+						{
+							path: "",
+							element: (
+								<Navigate to="/home/inbox" replace={true} />
+							),
+						},
+						{ path: "*", element: <Navigate to="/" /> },
 					],
 				},
 				{
