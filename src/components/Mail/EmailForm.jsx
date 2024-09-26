@@ -4,7 +4,7 @@ import axios from "axios";
 import { EditorState } from "draft-js";
 import { convertToHTML } from "draft-convert";
 
-import MessageInput from "./MessageInput";
+import MessageInput from "../UI/MessageInput";
 
 const RTDB_URL = `https://mail-box-client-38ab9-default-rtdb.asia-southeast1.firebasedatabase.app/`;
 

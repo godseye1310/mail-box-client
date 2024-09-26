@@ -3,6 +3,7 @@ import { MdLogin, MdLogout } from "react-icons/md";
 
 import useAuth from "../../store/auth-context";
 import { NavLink, useNavigate } from "react-router-dom";
+import { BiDotsVertical } from "react-icons/bi";
 
 const Header = () => {
 	const { isLoggedIn, handleLogOut } = useAuth();
@@ -15,7 +16,7 @@ const Header = () => {
 	};
 
 	return (
-		<header className={`flex flex-col px-0 pb-0`}>
+		<header className={`flex flex-col px-0 py-2`}>
 			<section className="flex items-center pt-1">
 				<h1
 					className={`flex flex-col pl-1 text-3xl font-bold max-xs:text-xl font-sans`}
@@ -57,7 +58,24 @@ const Header = () => {
 						</li>
 					</ul>
 				</nav>
-				<div className="ml-auto pr-2">
+				<div className="ml-auto pr-2 flex gap-3 items-center">
+					{isLoggedIn ? (
+						<ul className="list-none">
+							<li
+								className={`font-bold ${
+									false
+										? "text-amber-600  "
+										: "text-gray-900 hover:text-amber-500"
+								}`}
+							>
+								<i>
+									<BiDotsVertical className="text-xl" />
+								</i>
+							</li>
+						</ul>
+					) : (
+						""
+					)}
 					{isLoggedIn ? (
 						<button
 							onClick={logOut}
@@ -76,59 +94,6 @@ const Header = () => {
 						</NavLink>
 					)}
 				</div>
-			</section>
-			<section
-				className={`transition-max-height relative bg-blue-950 px-1 pb-1.5 pt-3 text-sm text-white transition-all duration-500 ease-in-out ${
-					isLoggedIn ? "max-h-16" : "max-h-0 overflow-hidden"
-				}`}
-			>
-				<nav
-					className={`flex w-full flex-wrap items-center justify-between py-0 ${
-						isLoggedIn ? "scale-100" : "scale-0"
-					}`}
-				>
-					<ul className="flex gap-x-4 pl-1">
-						<li
-							className={`font-bold decoration-4 underline-offset-8 hover:underline ${
-								false
-									? "text-amber-600 underline decoration-amber-600"
-									: "text-gray-300 decoration-blue-500 hover:text-amber-500"
-							}`}
-						>
-							<i>Profile</i>
-						</li>
-
-						<li>
-							<NavLink
-								to="/mail"
-								className={({ isActive }) =>
-									`font-bold decoration-4 underline-offset-8 hover:underline ${
-										isActive
-											? "text-amber-600 underline decoration-amber-600"
-											: "text-gray-300 decoration-blue-500 hover:text-amber-500"
-									}`
-								}
-							>
-								Create
-							</NavLink>
-						</li>
-
-						<li>
-							<NavLink
-								to="/inbox"
-								className={({ isActive }) =>
-									`font-bold decoration-4 underline-offset-8 hover:underline ${
-										isActive
-											? "text-amber-600 underline decoration-amber-600"
-											: "text-gray-300 decoration-blue-500 hover:text-amber-500"
-									}`
-								}
-							>
-								InBox
-							</NavLink>
-						</li>
-					</ul>
-				</nav>
 			</section>
 		</header>
 	);

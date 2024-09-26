@@ -1,24 +1,28 @@
 import React from "react";
-import { Link } from "react-router-dom";
+import { Outlet } from "react-router-dom";
+import Sidebar from "../components/UI/Sidebar";
+import useAuth from "../store/auth-context";
 
 const Home = () => {
-	// const isLoggedIn =
+	const isLoggedIn = useAuth();
 
 	return (
-		<div className={`px-0.5 py-4`}>
-			<div className="flex justify-between overflow-hidden border-b-2 border-b-gray-400 px-1 pb-8">
-				<h1 className="text-xl font-semibold">
-					Welcome to your mail box!!!
-				</h1>
-			</div>
+		<div className="flex w-full h-calc-dvh relative">
+			{/* Sidebar */}
+			<Sidebar />
 
-			<div className="py-5">
-				<Link
-					to="/mail"
-					className="bg-rose-500 border-none outline-none text-white px-3 py-2 rounded-xl"
-				>
-					Create Mail
-				</Link>
+			{/* Main Content Area */}
+			<div className="flex-1 px-0.5 py-4">
+				<div className="flex justify-between overflow-hidden border-b-2 border-b-gray-400 px-1 pb-2">
+					<h1 className="text-xl font-semibold">
+						Welcome to your mailbox!
+					</h1>
+				</div>
+
+				{/* Outlet for rendering inbox/sent sub-routes */}
+				<div className="mt-4">
+					<Outlet />
+				</div>
 			</div>
 		</div>
 	);

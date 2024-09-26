@@ -32,6 +32,10 @@ const App = () => {
 				{
 					path: "/home",
 					element: isLoggedIn ? <Home /> : <Navigate to="/" />,
+					children: [
+						{ path: "inbox", element: <Inbox /> }, // Inbox sub-route
+						// { path: "sent", element: <Sent /> },    // Sent sub-route
+					],
 				},
 				{
 					path: "/about",
@@ -39,10 +43,7 @@ const App = () => {
 				},
 
 				...(isLoggedIn
-					? [
-							{ path: "/mail", element: <MailPage /> },
-							{ path: "/inbox", element: <Inbox /> },
-					  ]
+					? [{ path: "/mail", element: <MailPage /> }]
 					: []),
 			],
 		},
