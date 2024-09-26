@@ -73,14 +73,14 @@ const AuthForm = () => {
 					const response = await axios.post(SIGNUP_URL, userAuthData);
 
 					console.log(response.data);
-					console.log("successfully logged In");
+					console.log("User has successfully signed up.");
 
 					const token = response.data.idToken;
 					const email = response.data.email;
-
 					handleLogIn(token, email);
 
-					console.log("User has successfully signed up.");
+					console.log("successfully logged In");
+
 					setEmail("");
 					setPassword("");
 					naviateTo("/home", { replace: true });

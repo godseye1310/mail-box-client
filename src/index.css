@@ -48,3 +48,14 @@ main {
 	height: 100%;
 	width: 100%;
 }
+
+@layer {
+
+  .editor{
+    @apply border-b min-h-[48dvh] leading-normal border-b-gray-300 focus-visible:outline-none focus:border-indigo-500 focus-within:border-b-indigo-500 !important
+  }
+
+  .toolbar {
+    @apply mt-5 pt-1 justify-center bg-slate-100 !important
+  } 
+}

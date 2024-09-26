@@ -1,74 +1,78 @@
 import React, { useState } from "react";
 import useAuth from "../../store/auth-context";
 import axios from "axios";
-import { EditorState, convertToRaw } from "draft-js";
-import { Editor } from "react-draft-wysiwyg";
-import "react-draft-wysiwyg/dist/react-draft-wysiwyg.css";
+import { EditorState } from "draft-js";
+import { convertToHTML } from "draft-convert";
+
+import MessageInput from "./MessageInput";
 
 const RTDB_URL = `https://mail-box-client-38ab9-default-rtdb.asia-southeast1.firebasedatabase.app/`;
 
 const EmailForm = () => {
 	const [email, setEmail] = useState("");
 	const [subject, setSubject] = useState("");
-	const [message, setMessage] = useState("");
 	const [messageEditorState, setMessageEditorState] = useState(
 		EditorState.createEmpty()
 	);
-
-	const { userEmail } = useAuth();
+	const { userEmail } = useAuth(); // Getting the email of the logged-in user (sender's email)
 
 	const sendEmailHandler = async (event) => {
 		event.preventDefault();
 
+		// Get the message content in plain text format
+		const messageContent = convertToHTML(
+			messageEditorState.getCurrentContent()
+		);
+
+		// Clean the email address for use in the Firebase path
+		const cleanEmail = email.replace(/[@.]/g, "_"); // Replacing @ and . with underscores
+		const cleanUserEmail = userEmail.replace(/[@.]/g, "_"); // Cleaning sender's email
+
+		// Create the email data object
 		const emailData = {
-			from: userEmail,
 			to: email,
+			from: userEmail,
 			subject: subject,
-			message: message,
+			message: messageContent,
 			timestamp: new Date().toISOString(),
 		};
-		// Add send email functionality here
+
 		try {
-			// 1. Create a unique email ID
-			const newEmailRef = await axios.post(
-				`${RTDB_URL}emails.json`,
+			// Store in the receiver's Inbox
+			const receiverResponse = await axios.post(
+				`${RTDB_URL}/users/${cleanEmail}/Inbox.json`,
 				emailData
 			);
-			const emailId = newEmailRef.data.name;
+			const emailId = receiverResponse.data.name; // Use Firebase response ID
 
-			// 2. Update the sender's sent folder
-			console.log(emailData.from);
+			console.log("sending Mail");
 
-			await axios.put(
-				`${RTDB_URL}users/${encodeEmail(
-					userEmail
-				)}/sent/${emailId}.json`,
-				true
+			// Store in the sender's SentBox
+			await axios.post(
+				`${RTDB_URL}/users/${cleanUserEmail}/SentBox.json`,
+				{
+					...emailData,
+					emailId, // Optionally store the emailId for reference
+				}
 			);
 
-			// 3. Update the receiver's inbox folder
-			await axios.put(
-				`${RTDB_URL}users/${encodeEmail(email)}/inbox/${emailId}.json`,
-				true
-			);
+			console.log("sending mail successfully", emailId);
 
-			console.log("Email sent successfully!");
+			// Reset form fields after successful email send
+			setEmail("");
+			setSubject("");
+			setMessageEditorState(EditorState.createEmpty());
 		} catch (error) {
-			console.error("Error sending email: ", error);
+			console.error("Error sending email:", error);
+			// Handle error (show notification, etc.)
 		}
-		console.log("Sending Email: ", { email, subject, message });
-	};
-
-	// Firebase keys don't allow '.', so we replace it
-	const encodeEmail = (email) => {
-		return email.split(/[@.]/).join("");
 	};
 
 	return (
 		<div className="min-h-full w-full px-3 bg-gray-100 flex justify-center items-start pt-12 pb-3">
 			<form
 				onSubmit={sendEmailHandler}
-				className="w-full max-w-6xl h-full bg-white shadow-md rounded-lg p-6"
+				className="w-full max-w-6xl min-h-[80dvh] bg-white shadow-md rounded-lg p-6"
 			>
 				{/* To Field */}
 				<div className="mb-4 relative">
@@ -80,10 +84,11 @@ const EmailForm = () => {
 					</label>
 					<input
 						type="email"
+						required
 						className="mt-1 block w-full py-2 border-b border-b-gray-300 focus-visible:outline-none focus:ring-indigo-500 focus:border-indigo-500"
 						value={email}
 						onChange={(e) => setEmail(e.target.value)}
-						placeholder="test@gmail.com"
+						placeholder="Recipient's Email"
 					/>
 				</div>
 
@@ -92,6 +97,7 @@ const EmailForm = () => {
 					<label className="block text-sm font-medium text-gray-700"></label>
 					<input
 						type="text"
+						required
 						className="mt-1 block w-full py-2 border-b border-b-gray-300 focus-visible:outline-none focus:ring-indigo-500 focus:border-indigo-500"
 						value={subject}
 						onChange={(e) => setSubject(e.target.value)}
@@ -100,33 +106,19 @@ const EmailForm = () => {
 				</div>
 
 				{/* Message Body */}
-				<div className="mb-4">
+				<div className="mb-4 relative h-full">
 					<label className="block text-sm font-medium text-gray-700"></label>
-					<textarea
-						className="mt-1 block w-full py-2 border-b border-b-gray-300 focus-visible:outline-none focus:ring-indigo-500 focus:border-indigo-500"
-						rows="18"
-						value={message}
-						onChange={(e) => setMessage(e.target.value)}
-						placeholder="Message"
-					></textarea>
-				</div>
-
-				{/* Footer Actions */}
-				<div className="flex justify-between items-center mt-6">
-					{/* Action buttons (icons for bold, attach file etc.) */}
-					<div className="space-x-2">
-						<button className="text-gray-500 hover:text-gray-700">
-							<i className="fas fa-paperclip"></i> {/* Icon */}
-						</button>
-						<button className="text-gray-500 hover:text-gray-700">
-							<i className="fas fa-bold"></i> {/* Icon */}
-						</button>
+					{/* Editor Text Area */}
+					<div className="flex flex-col h-full focus-within:border-indigo-500">
+						<MessageInput
+							editorState={messageEditorState}
+							onEditorStateChange={setMessageEditorState}
+						/>
 					</div>
-
 					{/* Send Button */}
 					<button
 						type="submit"
-						className="bg-blue-500 justify-start text-white px-4 py-2 rounded-md hover:bg-blue-600"
+						className="bg-blue-500 absolute bottom-1 justify-self-start justify-items-start text-white px-8 py-1.5 rounded-lg hover:bg-blue-600"
 					>
 						Send
 					</button>
