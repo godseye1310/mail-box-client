@@ -44,14 +44,12 @@ export const InboxProvider = ({ children }) => {
 		// console.log(id);
 		const read = inbox.find((mail) => mail.id === id);
 		// console.log(read);
-
-		// Replacing @ and . with underscores
-		const cleanUserEmail = userEmail.replace(/[@.]/g, "_"); // Cleaning sender's email
-
 		if (read.isRead) {
 			return;
 		}
 
+		// Replacing @ and . with underscores
+		const cleanUserEmail = userEmail.replace(/[@.]/g, "_"); // Cleaning sender's email
 		try {
 			const response = await axios.patch(
 				`${RTDB_URL}/${cleanUserEmail}/Inbox/${id}.json`,
@@ -73,8 +71,29 @@ export const InboxProvider = ({ children }) => {
 		}
 	};
 
+	const mailDeleteHandler = async (id) => {
+		console.log(id);
+		const cleanUserEmail = userEmail.replace(/[@.]/g, "_"); // Cleaning sender's email
+		try {
+			const response = await axios.delete(
+				`${RTDB_URL}/${cleanUserEmail}/Inbox/${id}.json`
+			);
+			console.log(response.status, "e-mail Deleted");
+
+			if (response.statusText === "OK") {
+				setInbox((prevInbox) =>
+					prevInbox.filter((mail) => !(mail.id === id))
+				);
+			}
+		} catch (error) {
+			console.log(error);
+		}
+	};
+
 	return (
-		<InboxContext.Provider value={{ inbox, setInbox, handleMarkasRead }}>
+		<InboxContext.Provider
+			value={{ inbox, setInbox, handleMarkasRead, mailDeleteHandler }}
+		>
 			{children}
 		</InboxContext.Provider>
 	);

@@ -72,7 +72,7 @@ const MailView = () => {
 					/>
 				</div>
 
-				{/* Example of buttons or actions similar to Gmail */}
+				{/* actions buttons */}
 				<div className="mt-auto flex gap-4">
 					<button className="bg-blue-500 text-white px-4 py-2 rounded-lg">
 						Reply

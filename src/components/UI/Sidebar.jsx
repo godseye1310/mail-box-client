@@ -32,10 +32,12 @@ const Sidebar = () => {
 								}`
 							}
 						>
-							<span>Inbox</span>{" "}
-							<span className="ml-6 text-xs bg-blue-600/50 py-1 px-3 font-light text-white  rounded-full">
-								{unread}
-							</span>
+							<span>Inbox</span>
+							{unread !== 0 && (
+								<span className="ml-6 max-sm:ml-2 text-xs max-sm:text-[9px]  bg-blue-600/50 py-1 px-3 font-light max-sm:px-2 text-white  rounded-full">
+									{unread}
+								</span>
+							)}
 						</NavLink>
 					</li>
 					<li className="">

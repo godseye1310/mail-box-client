@@ -21,7 +21,7 @@ const Header = () => {
 				<h1
 					className={`flex flex-col pl-1 text-3xl text-red-950 font-bold max-xs:text-xl font-sans`}
 				>
-					WebMail
+					Web!Mail
 				</h1>
 				<nav className="px-5">
 					<ul

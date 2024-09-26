@@ -2,18 +2,32 @@ import React from "react";
 import { GoDotFill } from "react-icons/go";
 import { Link } from "react-router-dom";
 import useInbox from "../../store/inbox-context";
+import { RiDeleteBin2Fill } from "react-icons/ri";
 
 const UserInbox = ({ inbox }) => {
 	// console.log(inbox);
-	const { handleMarkasRead } = useInbox();
+	const { handleMarkasRead, mailDeleteHandler } = useInbox();
 
 	const handleRead = (mailID) => {
 		handleMarkasRead(mailID);
 	};
 
+	const handleDelete = (mailID) => {
+		mailDeleteHandler(mailID);
+	};
+
+	const sortedInbox = inbox
+		.slice()
+		.sort(
+			(a, b) =>
+				new Date(b.timestamp).getTime() -
+				new Date(a.timestamp).getTime()
+		);
+	console.log(sortedInbox);
+
 	return (
 		<ul className="bg-white px-5 py-1 rounded-xl shadow-md flex h-full flex-col overflow-y-auto">
-			{inbox.map((mail) => (
+			{sortedInbox.map((mail) => (
 				<li key={mail.id} className="">
 					<div className=" flex gap-3 max-sm:gap-0.5 px-0 w-full rounded hover:bg-black/15">
 						<input
@@ -22,7 +36,7 @@ const UserInbox = ({ inbox }) => {
 							id={mail.id}
 							className=" ml-1 w-6 cursor-pointer max-xs:w-5"
 						/>
-						<span className="w-4 flex items-center">
+						<span className="w-4 flex items-center max-xs:w-3.5">
 							{mail.isRead ? (
 								""
 							) : (
@@ -57,6 +71,12 @@ const UserInbox = ({ inbox }) => {
 								)}
 							</p>
 						</Link>
+						<button
+							onClick={() => handleDelete(mail.id)}
+							className=""
+						>
+							<RiDeleteBin2Fill className="size-5 text-red-500 hover:text-red-600 focus:text-red-600" />
+						</button>
 					</div>
 					<hr className="border-gray-400 my-1" />
 				</li>
