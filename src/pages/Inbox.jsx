@@ -43,7 +43,7 @@ const Inbox = () => {
 	}, [isLoggedIn, userEmail]);
 
 	return (
-		<div>
+		<div className="h-full px-2">
 			<UserInbox inbox={inbox} />
 		</div>
 	);

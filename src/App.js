@@ -11,6 +11,7 @@ import MailPage from "./pages/MailPage";
 import useAuth from "./store/auth-context";
 import About from "./pages/About";
 import Inbox from "./pages/Inbox";
+import Sentbox from "./pages/Sentbox";
 
 const App = () => {
 	const { isLoggedIn } = useAuth();
@@ -34,7 +35,8 @@ const App = () => {
 					element: isLoggedIn ? <Home /> : <Navigate to="/" />,
 					children: [
 						{ path: "inbox", element: <Inbox /> }, // Inbox sub-route
-						// { path: "sent", element: <Sent /> },    // Sent sub-route
+						{ path: "sent", element: <Sentbox /> }, // Sent sub-route
+						{ path: "", element: <Navigate to="inbox" /> },
 					],
 				},
 				{
@@ -45,6 +47,8 @@ const App = () => {
 				...(isLoggedIn
 					? [{ path: "/mail", element: <MailPage /> }]
 					: []),
+
+				{ path: "*", element: <Navigate to="/" /> },
 			],
 		},
 	]);
