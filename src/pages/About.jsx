@@ -1,4 +1,5 @@
 import React from "react";
+import Loader from "../components/UI/Loader";
 
 const About = () => {
 	return (
@@ -7,6 +8,7 @@ const About = () => {
 			<br />
 			<br />
 			<p>This is about us page</p>
+			<Loader />
 		</div>
 	);
 };

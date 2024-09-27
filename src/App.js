@@ -1,18 +1,26 @@
-import React from "react";
+import React, { lazy, Suspense } from "react";
 import {
 	createBrowserRouter,
 	Navigate,
 	RouterProvider,
 } from "react-router-dom";
-import SignInPage from "./pages/SignInPage";
+// import SignInPage from "./pages/SignInPage";
 import RootLayout from "./components/Layout/RootLayout";
-import Home from "./pages/Home";
-import MailPage from "./pages/MailPage";
+// import Home from "./pages/Home";
+// import MailPage from "./pages/MailPage";
 import useAuth from "./store/auth-context";
 import About from "./pages/About";
-import Inbox from "./pages/Inbox";
-import Sentbox from "./pages/Sentbox";
-import MailView from "./components/Mail/MailView";
+import Loader from "./components/UI/Loader";
+// import Inbox from "./pages/Inbox";
+// import Sentbox from "./pages/Sentbox";
+// import MailView from "./components/Mail/MailView";
+
+const SignInPage = lazy(() => import("./pages/SignInPage"));
+const Home = lazy(() => import("./pages/Home"));
+const MailPage = lazy(() => import("./pages/MailPage"));
+const Inbox = lazy(() => import("./pages/Inbox"));
+const Sentbox = lazy(() => import("./pages/Sentbox"));
+const MailView = lazy(() => import("./components/Mail/MailView"));
 
 const App = () => {
 	const { isLoggedIn } = useAuth();
@@ -25,28 +33,67 @@ const App = () => {
 			children: [
 				{
 					path: "/",
-					element: !isLoggedIn ? (
-						<SignInPage />
-					) : (
-						<Navigate to="/home" />
+					element: (
+						<Suspense fallback={null}>
+							{" "}
+							{!isLoggedIn ? (
+								<SignInPage />
+							) : (
+								<Navigate to="/home" />
+							)}
+						</Suspense>
 					),
 				},
 				{
 					path: "/home",
-					element: isLoggedIn ? <Home /> : <Navigate to="/" />,
+					element: (
+						<Suspense fallback={<Loader />}>
+							{isLoggedIn ? <Home /> : <Navigate to="/" />}
+						</Suspense>
+					),
 					children: [
 						{
 							path: "",
 							element: (
-								<Navigate to="/home/inbox" replace={true} />
+								<Suspense fallback={<Loader />}>
+									<Navigate to="/home/inbox" replace={true} />
+								</Suspense>
 							),
 						},
 
-						{ path: "inbox", element: <Inbox /> }, // Inbox sub-route
-						{ path: "inbox/:inboxmailID", element: <MailView /> },
+						{
+							path: "inbox",
+							element: (
+								<Suspense fallback={<Loader />}>
+									<Inbox />
+								</Suspense>
+							),
+						}, // Inbox sub-route
+						{
+							path: "inbox/:inboxmailID",
+							element: (
+								<Suspense fallback={<Loader />}>
+									<MailView />
+								</Suspense>
+							),
+						},
 
-						{ path: "sent", element: <Sentbox /> }, // Sent sub-route
-						{ path: "sent/:sentmailID", element: <MailView /> },
+						{
+							path: "sent",
+							element: (
+								<Suspense fallback={<Loader />}>
+									<Sentbox />
+								</Suspense>
+							),
+						}, // Sent sub-route
+						{
+							path: "sent/:sentmailID",
+							element: (
+								<Suspense fallback={<Loader />}>
+									<MailView />
+								</Suspense>
+							),
+						},
 
 						{ path: "*", element: <Navigate to="/" /> },
 					],
@@ -57,7 +104,16 @@ const App = () => {
 				},
 
 				...(isLoggedIn
-					? [{ path: "/mail", element: <MailPage /> }]
+					? [
+							{
+								path: "/mail",
+								element: (
+									<Suspense fallback={<Loader />}>
+										<MailPage />
+									</Suspense>
+								),
+							},
+					  ]
 					: []),
 
 				{ path: "*", element: <Navigate to="/" /> },
