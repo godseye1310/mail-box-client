@@ -1,10 +1,10 @@
 import React from "react";
 import { GoDotFill } from "react-icons/go";
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import useInbox from "../../store/inbox-context";
 import { RiDeleteBin2Fill } from "react-icons/ri";
 
-const UserInbox = ({ inbox }) => {
+const UserInbox = ({ emailData }) => {
 	// console.log(inbox);
 	const { handleMarkasRead, mailDeleteHandler } = useInbox();
 
@@ -16,18 +16,32 @@ const UserInbox = ({ inbox }) => {
 		mailDeleteHandler(mailID);
 	};
 
-	const sortedInbox = inbox
+	const sortedEMails = emailData
 		.slice()
 		.sort(
 			(a, b) =>
 				new Date(b.timestamp).getTime() -
 				new Date(a.timestamp).getTime()
 		);
-	console.log(sortedInbox);
+	// console.log(sortedEMails);
+
+	const location = useLocation();
+
+	let isInbox = true;
+	let mailPath = "inbox";
+	if (location.pathname === `/home/inbox`) {
+		isInbox = true;
+		mailPath = "inbox";
+		console.log(isInbox);
+	} else if (location.pathname === `/home/sent`) {
+		isInbox = false;
+		mailPath = "sent";
+		console.log(isInbox);
+	}
 
 	return (
 		<ul className="bg-white px-5 py-1 rounded-xl shadow-md flex h-full flex-col overflow-y-auto">
-			{sortedInbox.map((mail) => (
+			{sortedEMails.map((mail) => (
 				<li key={mail.id} className="">
 					<div className=" flex gap-3 max-sm:gap-0.5 px-0 w-full rounded hover:bg-black/15">
 						<input
@@ -36,20 +50,22 @@ const UserInbox = ({ inbox }) => {
 							id={mail.id}
 							className=" ml-1 w-6 cursor-pointer max-xs:w-5"
 						/>
-						<span className="w-4 flex items-center max-xs:w-3.5">
-							{mail.isRead ? (
-								""
-							) : (
-								<GoDotFill className="text-blue-500" />
-							)}
-						</span>
+						{isInbox && (
+							<span className="w-4 flex items-center max-xs:w-3.5">
+								{mail.isRead ? (
+									""
+								) : (
+									<GoDotFill className="text-blue-500" />
+								)}
+							</span>
+						)}
 						<Link
-							to={`/home/inbox/${mail.id}`}
-							onClick={() => handleRead(mail.id)}
+							to={`/home/${mailPath}/${mail.id}`}
+							onClick={() => isInbox && handleRead(mail.id)}
 							className="flex-1 px-2 py-3 grid grid-flow-col grid-cols-6 justify-items-center items-center cursor-pointer"
 						>
 							<p className="col-span-2 max-sm:col-span-4 justify-self-start max-xs:text-sm">
-								{mail.from}
+								{isInbox ? mail.from : mail.to}
 								<span className="hidden max-sm:block font-semibold max-xs:text-sm">
 									{mail.subject}
 								</span>

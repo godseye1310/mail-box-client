@@ -10,6 +10,8 @@ export const InboxProvider = ({ children }) => {
 	const [inbox, setInbox] = useState([]);
 	const { userEmail, isLoggedIn } = useAuth();
 
+	const [sentMails, setSentMails] = useState([]);
+
 	useEffect(() => {
 		const fetchInbox = async () => {
 			// Replacing @ and . with underscores
@@ -90,9 +92,45 @@ export const InboxProvider = ({ children }) => {
 		}
 	};
 
+	useEffect(() => {
+		const fetchInbox = async () => {
+			// Replacing @ and . with underscores
+			const cleanUserEmail = userEmail.replace(/[@.]/g, "_"); // Cleaning sender's email
+
+			try {
+				const response = await axios.get(
+					`${RTDB_URL}/${cleanUserEmail}/SentBox.json`
+				);
+
+				// console.log(response.data);
+				console.log("sentBox fetch successfull");
+				let sentboxList = [];
+				if (response.data) {
+					sentboxList = Object.keys(response.data).map((key) => {
+						return { ...response.data[key], id: key };
+					});
+					// console.log(inboxList);
+					setSentMails(sentboxList);
+				}
+			} catch (error) {
+				console.log(error.response);
+			}
+		};
+
+		if (isLoggedIn) {
+			fetchInbox();
+		}
+	}, [isLoggedIn, userEmail]);
+
 	return (
 		<InboxContext.Provider
-			value={{ inbox, setInbox, handleMarkasRead, mailDeleteHandler }}
+			value={{
+				inbox,
+				setInbox,
+				handleMarkasRead,
+				mailDeleteHandler,
+				sentMails,
+			}}
 		>
 			{children}
 		</InboxContext.Provider>

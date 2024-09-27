@@ -42,6 +42,7 @@ const App = () => {
 						{ path: "inbox", element: <Inbox /> }, // Inbox sub-route
 						{ path: "inbox/:inboxmailID", element: <MailView /> },
 						{ path: "sent", element: <Sentbox /> }, // Sent sub-route
+						{ path: "sent/:sentmailID", element: <MailView /> },
 						{
 							path: "",
 							element: (

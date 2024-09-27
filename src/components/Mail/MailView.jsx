@@ -6,16 +6,26 @@ import { Editor } from "react-draft-wysiwyg";
 import { convertFromHTML } from "draft-js";
 
 import "react-draft-wysiwyg/dist/react-draft-wysiwyg.css";
-import { useParams } from "react-router-dom";
+import { useLocation, useParams } from "react-router-dom";
+import { RiDeleteBin2Fill } from "react-icons/ri";
 
 const MailView = () => {
-	const { inbox } = useInbox();
+	const { inbox, sentMails, mailDeleteHandler } = useInbox();
 	// console.log(inbox);
 
-	const { inboxmailID } = useParams(); // Extract mail ID from the URL
-	const email = inbox.find((mail) => mail.id === inboxmailID);
+	const location = useLocation();
+	const isInbox = location.pathname.includes("inbox");
+
+	const { inboxmailID, sentmailID } = useParams(); // Extract mail ID from the URL
+	const email = isInbox
+		? inbox.find((mail) => mail.id === inboxmailID)
+		: sentMails.find((mail) => mail.id === sentmailID);
 
 	const [editorState, setEditorState] = useState(EditorState.createEmpty());
+
+	const handleDelete = (mailID) => {
+		mailDeleteHandler(mailID);
+	};
 
 	useEffect(() => {
 		if (email && email.message) {
@@ -39,10 +49,27 @@ const MailView = () => {
 				<div className="flex justify-between items-center border-b pb-4 mb-6">
 					<div>
 						<p className="text-lg font-medium">
-							<strong>From:</strong> {email.from}
+							{isInbox ? (
+								<>
+									<strong>From:</strong> {email.from}
+								</>
+							) : (
+								<>
+									<strong>To:</strong> {email.to}
+								</>
+							)}
 						</p>
 						<p className="text-md text-gray-600">
-							<strong>To:</strong> {email.to}
+							{isInbox ? (
+								<>
+									<strong>To:</strong> {email.to}
+								</>
+							) : (
+								<>
+									<strong>From:</strong> {email.from}
+								</>
+							)}
+							<span> (Me)</span>
 						</p>
 					</div>
 					<div>
@@ -74,14 +101,19 @@ const MailView = () => {
 
 				{/* actions buttons */}
 				<div className="mt-auto flex gap-4">
-					<button className="bg-blue-500 text-white px-4 py-2 rounded-lg">
-						Reply
-					</button>
+					{isInbox && (
+						<button className="bg-blue-500 text-white px-4 py-2 rounded-lg">
+							Reply
+						</button>
+					)}
 					<button className="bg-gray-300 px-4 py-2 rounded-lg">
 						Forward
 					</button>
-					<button className="bg-red-500 text-white px-4 py-2 rounded-lg">
-						Delete
+					<button
+						onClick={() => handleDelete(email.id)}
+						className="bg-red-500 hover:bg-red-600 text-white ml-auto px-4 py-2 rounded-lg"
+					>
+						<RiDeleteBin2Fill />
 					</button>
 				</div>
 			</div>
