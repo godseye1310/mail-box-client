@@ -17,11 +17,17 @@ const Header = () => {
 
 	return (
 		<header className={`flex flex-col px-0 py-2`}>
-			<section className="flex items-center pt-1">
+			<section className="flex items-center pt-0">
 				<h1
-					className={`flex flex-col pl-1 text-3xl text-red-950 font-bold max-xs:text-xl font-sans`}
+					className={`flex pl-0 text-3xl items-end text-red-700 font-bold max-sm:text-2xl max-xs:text-xl font-sans`}
 				>
-					Web!Mail
+					<span className="text-4xl max-sm:text-3xl max-xs:text-2xl">
+						W
+					</span>
+					<span className="">eb!</span>
+					<span className="bg-red-700 text-white text-2xl max-sm:text-xl max-xs:text-lg px-0.5 rounded-lg">
+						Mail
+					</span>
 				</h1>
 				<nav className="px-5">
 					<ul
@@ -48,7 +54,7 @@ const Header = () => {
 								className={({ isActive }) =>
 									`transform font-bold  transition-all duration-150 max-xs:text-sm ${
 										isActive
-											? "text-3xl  font-extrabold text-red-600 max-xs:text-lg"
+											? "text-3xl text-red-600 max-xs:text-lg"
 											: "hover:text-red-600 text-2xl text-gray-600"
 									}`
 								}

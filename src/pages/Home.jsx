@@ -7,7 +7,7 @@ const Home = () => {
 	// const isLoggedIn = useAuth();
 
 	return (
-		<div className="flex w-full h-calc-dvh relative bg-neutral-100">
+		<div className="flex w-full h-calc-dvh relative bg-neutral-100 max-xs:h-calc-dvh-xs overflow-hidden">
 			{/* Sidebar */}
 			<Sidebar />
 

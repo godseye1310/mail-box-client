@@ -32,11 +32,9 @@ const Mailbox = ({ emailData }) => {
 	if (location.pathname === `/home/inbox`) {
 		isInbox = true;
 		mailPath = "inbox";
-		console.log(isInbox);
 	} else if (location.pathname === `/home/sent`) {
 		isInbox = false;
 		mailPath = "sent";
-		console.log(isInbox);
 	}
 
 	return (

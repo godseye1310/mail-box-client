@@ -6,7 +6,7 @@ import { Editor } from "react-draft-wysiwyg";
 import { convertFromHTML } from "draft-js";
 
 import "react-draft-wysiwyg/dist/react-draft-wysiwyg.css";
-import { useLocation, useParams } from "react-router-dom";
+import { Navigate, useLocation, useParams } from "react-router-dom";
 import { RiDeleteBin2Fill } from "react-icons/ri";
 
 const MailView = () => {
@@ -38,6 +38,15 @@ const MailView = () => {
 			setEditorState(EditorState.createWithContent(contentState));
 		}
 	}, [email]);
+
+	// Redirect to /home/inbox if no matching email is found
+	if (!email) {
+		return isInbox ? (
+			<Navigate to="/home/inbox" />
+		) : (
+			<Navigate to="/home/sent" />
+		);
+	}
 
 	return (
 		<div className="h-full w-full p-5">
