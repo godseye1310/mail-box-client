@@ -1,12 +1,12 @@
 import React from "react";
-import useInbox from "../store/inbox-context";
-import UserInbox from "../components/Mail/UserInbox";
+import useMailbox from "../store/mailbox-context";
+import Mailbox from "../components/Mail/Mailbox";
 
 const Sentbox = () => {
-	const { sentMails } = useInbox();
+	const { sentMails } = useMailbox();
 	return (
 		<div className="h-full px-2">
-			<UserInbox emailData={sentMails} />
+			<Mailbox emailData={sentMails} />
 		</div>
 	);
 };

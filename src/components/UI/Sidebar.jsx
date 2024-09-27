@@ -1,8 +1,8 @@
 import { NavLink, Link } from "react-router-dom";
-import useInbox from "../../store/inbox-context";
+import useMailbox from "../../store/mailbox-context";
 
 const Sidebar = () => {
-	const { inbox } = useInbox();
+	const { inbox } = useMailbox();
 
 	const unread = inbox.reduce((acc, cur) => {
 		return !cur.isRead ? acc + 1 : acc;

@@ -2,11 +2,11 @@ import { createContext, useContext, useEffect, useState } from "react";
 import useAuth from "./auth-context";
 import axios from "axios";
 
-const InboxContext = createContext();
+const MailboxContext = createContext();
 
 const RTDB_URL = `https://mail-box-client-38ab9-default-rtdb.asia-southeast1.firebasedatabase.app/users`;
 
-export const InboxProvider = ({ children }) => {
+export const MailboxProvider = ({ children }) => {
 	const [inbox, setInbox] = useState([]);
 	const { userEmail, isLoggedIn } = useAuth();
 
@@ -123,20 +123,19 @@ export const InboxProvider = ({ children }) => {
 	}, [isLoggedIn, userEmail]);
 
 	return (
-		<InboxContext.Provider
+		<MailboxContext.Provider
 			value={{
 				inbox,
-				setInbox,
 				handleMarkasRead,
 				mailDeleteHandler,
 				sentMails,
 			}}
 		>
 			{children}
-		</InboxContext.Provider>
+		</MailboxContext.Provider>
 	);
 };
 
-const useInbox = () => useContext(InboxContext);
+const useMailbox = () => useContext(MailboxContext);
 
-export default useInbox;
+export default useMailbox;

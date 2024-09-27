@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import useInbox from "../../store/inbox-context";
+import useMailbox from "../../store/mailbox-context";
 
 import { EditorState, ContentState } from "draft-js";
 import { Editor } from "react-draft-wysiwyg";
@@ -10,7 +10,7 @@ import { useLocation, useParams } from "react-router-dom";
 import { RiDeleteBin2Fill } from "react-icons/ri";
 
 const MailView = () => {
-	const { inbox, sentMails, mailDeleteHandler } = useInbox();
+	const { inbox, sentMails, mailDeleteHandler } = useMailbox();
 	// console.log(inbox);
 
 	const location = useLocation();

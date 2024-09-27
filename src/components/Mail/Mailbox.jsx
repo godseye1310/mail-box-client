@@ -1,12 +1,12 @@
 import React from "react";
 import { GoDotFill } from "react-icons/go";
 import { Link, useLocation } from "react-router-dom";
-import useInbox from "../../store/inbox-context";
+import useMailbox from "../../store/mailbox-context";
 import { RiDeleteBin2Fill } from "react-icons/ri";
 
-const UserInbox = ({ emailData }) => {
+const Mailbox = ({ emailData }) => {
 	// console.log(inbox);
-	const { handleMarkasRead, mailDeleteHandler } = useInbox();
+	const { handleMarkasRead, mailDeleteHandler } = useMailbox();
 
 	const handleRead = (mailID) => {
 		handleMarkasRead(mailID);
@@ -101,4 +101,4 @@ const UserInbox = ({ emailData }) => {
 	);
 };
 
-export default UserInbox;
+export default Mailbox;

@@ -13,12 +13,12 @@ import About from "./pages/About";
 import Inbox from "./pages/Inbox";
 import Sentbox from "./pages/Sentbox";
 import MailView from "./components/Mail/MailView";
-// import useInbox from "./store/inbox-context";
+// import useMailbox from "./store/inbox-context";
 
 const App = () => {
 	const { isLoggedIn } = useAuth();
 
-	// const { inbox } = useInbox();
+	// const { inbox } = useMailbox();
 	// console.log(inbox);
 
 	const router = createBrowserRouter([
