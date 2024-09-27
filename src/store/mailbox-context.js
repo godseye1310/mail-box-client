@@ -1,4 +1,10 @@
-import { createContext, useContext, useEffect, useState } from "react";
+import {
+	createContext,
+	useCallback,
+	useContext,
+	useEffect,
+	useState,
+} from "react";
 import useAuth from "./auth-context";
 import axios from "axios";
 
@@ -12,35 +18,49 @@ export const MailboxProvider = ({ children }) => {
 
 	const [sentMails, setSentMails] = useState([]);
 
-	useEffect(() => {
-		const fetchInbox = async () => {
-			// Replacing @ and . with underscores
-			const cleanUserEmail = userEmail.replace(/[@.]/g, "_"); // Cleaning sender's email
+	const fetchInbox = useCallback(async () => {
+		// Replacing @ and . with underscores
+		const cleanUserEmail = userEmail.replace(/[@.]/g, "_"); // Cleaning sender's email
 
-			try {
-				const response = await axios.get(
-					`${RTDB_URL}/${cleanUserEmail}/Inbox.json`
-				);
+		try {
+			const response = await axios.get(
+				`${RTDB_URL}/${cleanUserEmail}/Inbox.json`
+			);
 
-				// console.log(response.data);
-				console.log("inbox fetch successfull");
-				let inboxList = [];
-				if (response.data) {
-					inboxList = Object.keys(response.data).map((key) => {
-						return { ...response.data[key], id: key };
-					});
-					// console.log(inboxList);
-					setInbox(inboxList);
+			// console.log(response.data);
+			console.log("inbox fetch successfull");
+
+			let fetchedInbox = [];
+			if (response.data) {
+				fetchedInbox = Object.keys(response.data).map((key) => {
+					return { ...response.data[key], id: key };
+				});
+				// console.log(inboxList);
+				if (fetchedInbox.length !== inbox.length) {
+					console.log(fetchedInbox.length, inbox.length);
+
+					setInbox(fetchedInbox);
+					console.log("inbox updated");
 				}
-			} catch (error) {
-				console.log(error.response);
 			}
-		};
+		} catch (error) {
+			console.log(error.response);
+		}
+	}, [userEmail, inbox]);
 
+	useEffect(() => {
+		let fetchInterval;
 		if (isLoggedIn) {
 			fetchInbox();
+
+			// Set up polling every 3 seconds
+			fetchInterval = setInterval(() => {
+				fetchInbox();
+			}, 3000); // Polling every 3 seconds
 		}
-	}, [isLoggedIn, userEmail]);
+
+		return () => clearInterval(fetchInterval);
+	}, [isLoggedIn, fetchInbox]);
 
 	const handleMarkasRead = async (id) => {
 		// console.log(id);
