@@ -1,11 +1,11 @@
 import React, { useState } from "react";
 import useAuth from "../../store/auth-context";
-import axios from "axios";
+
 import { EditorState } from "draft-js";
 import { convertToHTML } from "draft-convert";
 
 import MessageInput from "../UI/MessageInput";
-import useFetch from "../../store/useFetch";
+import useFetch from "../../hooks/useFetch";
 
 const RTDB_URL = `https://mail-box-client-38ab9-default-rtdb.asia-southeast1.firebasedatabase.app`;
 
