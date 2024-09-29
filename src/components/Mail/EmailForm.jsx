@@ -5,7 +5,6 @@ import { EditorState } from "draft-js";
 import { convertToHTML } from "draft-convert";
 
 import MessageInput from "../UI/MessageInput";
-import useFetch from "../../store/useFetch";
 
 const RTDB_URL = `https://mail-box-client-38ab9-default-rtdb.asia-southeast1.firebasedatabase.app`;
 
@@ -17,72 +16,6 @@ const EmailForm = () => {
 	);
 	const { userEmail } = useAuth(); // Getting the email of the logged-in user (sender's email)
 
-	// Clean the email address for use in the Firebase path
-	const cleanEmail = email.replace(/[@.]/g, "_"); // Replacing @ and . with underscores
-	const cleanUserEmail = userEmail.replace(/[@.]/g, "_"); // Cleaning sender's email
-
-	// Use the useFetch hook to send the email
-	const { fetchData: sendReceiverEmail } = useFetch(
-		`${RTDB_URL}/users/${cleanEmail}/Inbox.json`,
-		"POST"
-	);
-	const { fetchData: sendSenderEmail } = useFetch(
-		`${RTDB_URL}/users/${cleanUserEmail}/SentBox.json`,
-		"POST"
-	);
-
-	// const sendEmailHandler = async (event) => {
-	// 	event.preventDefault();
-
-	// 	// Get the message content in plain text format
-	// 	const messageContent = convertToHTML(
-	// 		messageEditorState.getCurrentContent()
-	// 	);
-
-	// 	// Clean the email address for use in the Firebase path
-	// 	const cleanEmail = email.replace(/[@.]/g, "_"); // Replacing @ and . with underscores
-	// 	const cleanUserEmail = userEmail.replace(/[@.]/g, "_"); // Cleaning sender's email
-
-	// 	// Create the email data object
-	// 	const emailData = {
-	// 		to: email,
-	// 		from: userEmail,
-	// 		subject: subject,
-	// 		message: messageContent,
-	// 		timestamp: new Date().toISOString(),
-	// 	};
-
-	// 	try {
-	// 		// Store in the receiver's Inbox
-	// 		const receiverResponse = await axios.post(
-	// 			`${RTDB_URL}/users/${cleanEmail}/Inbox.json`,
-	// 			{ ...emailData, isRead: false }
-	// 		);
-	// 		const emailId = receiverResponse.data.name; // Use Firebase response ID
-
-	// 		console.log("sending Mail");
-
-	// 		// Store in the sender's SentBox
-	// 		await axios.post(
-	// 			`${RTDB_URL}/users/${cleanUserEmail}/SentBox.json`,
-	// 			{
-	// 				...emailData,
-	// 				emailId, // Optionally store the emailId for reference
-	// 			}
-	// 		);
-
-	// 		console.log("sending mail successfully", emailId);
-
-	// 		// Reset form fields after successful email send
-	// 		setEmail("");
-	// 		setSubject("");
-	// 		setMessageEditorState(EditorState.createEmpty());
-	// 	} catch (error) {
-	// 		console.error("Error sending email:", error);
-	// 		// Handle error (show notification, etc.)
-	// 	}
-	// };
-
 	const sendEmailHandler = async (event) => {
 		event.preventDefault();
 
@@ -90,6 +23,10 @@ const EmailForm = () => {
 		const messageContent = convertToHTML(
 			messageEditorState.getCurrentContent()
 		);
+
+		// Clean the email address for use in the Firebase path
+		const cleanEmail = email.replace(/[@.]/g, "_"); // Replacing @ and . with underscores
+		const cleanUserEmail = userEmail.replace(/[@.]/g, "_"); // Cleaning sender's email
 
 		// Create the email data object
 		const emailData = {
@@ -102,16 +39,22 @@ const EmailForm = () => {
 
 		try {
 			// Store in the receiver's Inbox
-			const receiverResponse = await sendReceiverEmail(emailData);
-			const emailId = receiverResponse.name; // Use Firebase response ID
+			const receiverResponse = await axios.post(
+				`${RTDB_URL}/users/${cleanEmail}/Inbox.json`,
+				{ ...emailData, isRead: false }
+			);
+			const emailId = receiverResponse.data.name; // Use Firebase response ID
 
 			console.log("sending Mail");
 
 			// Store in the sender's SentBox
-			await sendSenderEmail({
-				...emailData,
-				emailId, // Optionally store the emailId for reference
-			});
+			await axios.post(
+				`${RTDB_URL}/users/${cleanUserEmail}/SentBox.json`,
+				{
+					...emailData,
+					emailId, // Optionally store the emailId for reference
+				}
+			);
 
 			console.log("sending mail successfully", emailId);
 
