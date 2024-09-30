@@ -24,7 +24,9 @@ const MailView = () => {
 	const [editorState, setEditorState] = useState(EditorState.createEmpty());
 
 	const handleDelete = (mailID) => {
-		mailDeleteHandler(mailID);
+		isInbox
+			? mailDeleteHandler(mailID, "Inbox")
+			: mailDeleteHandler(mailID, "SentBox");
 	};
 
 	useEffect(() => {

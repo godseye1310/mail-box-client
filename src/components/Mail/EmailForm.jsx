@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import useAuth from "../../store/auth-context";
-
+import useMailbox from "../../store/mailbox-context";
 import { EditorState } from "draft-js";
 import { convertToHTML } from "draft-convert";
 
@@ -16,6 +16,7 @@ const EmailForm = () => {
 		EditorState.createEmpty()
 	);
 	const { userEmail } = useAuth(); // Getting the email of the logged-in user (sender's email)
+	const { addSentMail } = useMailbox();
 
 	// Clean the email address for use in the Firebase path
 	const cleanEmail = email.replace(/[@.]/g, "_"); // Replacing @ and . with underscores
@@ -26,7 +27,7 @@ const EmailForm = () => {
 		`${RTDB_URL}/users/${cleanEmail}/Inbox.json`,
 		"POST"
 	);
-	const { fetchData: sendSenderEmail } = useFetch(
+	const { fetchData: sendSenderMailRef } = useFetch(
 		`${RTDB_URL}/users/${cleanUserEmail}/SentBox.json`,
 		"POST"
 	);
@@ -108,10 +109,12 @@ const EmailForm = () => {
 			console.log("sending Mail");
 
 			// Store in the sender's SentBox
-			await sendSenderEmail({
+			const senderResponse = await sendSenderMailRef({
 				...emailData,
 				emailId, // Optionally store the emailId for reference
 			});
+			const id = senderResponse.name;
+			addSentMail({ ...emailData, id, emailId });
 
 			console.log("sending mail successfully", emailId);
 

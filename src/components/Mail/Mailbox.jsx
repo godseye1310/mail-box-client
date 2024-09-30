@@ -8,23 +8,6 @@ const Mailbox = ({ emailData }) => {
 	// console.log(inbox);
 	const { handleMarkasRead, mailDeleteHandler } = useMailbox();
 
-	const handleRead = (mailID) => {
-		handleMarkasRead(mailID);
-	};
-
-	const handleDelete = (mailID) => {
-		mailDeleteHandler(mailID);
-	};
-
-	const sortedEMails = emailData
-		.slice()
-		.sort(
-			(a, b) =>
-				new Date(b.timestamp).getTime() -
-				new Date(a.timestamp).getTime()
-		);
-	// console.log(sortedEMails);
-
 	const location = useLocation();
 
 	let isInbox = true;
@@ -36,6 +19,25 @@ const Mailbox = ({ emailData }) => {
 		isInbox = false;
 		mailPath = "sent";
 	}
+
+	const handleRead = (mailID) => {
+		handleMarkasRead(mailID);
+	};
+
+	const handleDelete = (mailID) => {
+		isInbox
+			? mailDeleteHandler(mailID, "Inbox")
+			: mailDeleteHandler(mailID, "SentBox");
+	};
+
+	const sortedEMails = emailData
+		.slice()
+		.sort(
+			(a, b) =>
+				new Date(b.timestamp).getTime() -
+				new Date(a.timestamp).getTime()
+		);
+	// console.log(sortedEMails);
 
 	return (
 		<ul className="bg-white px-5 py-1 rounded-xl shadow-md flex h-full flex-col overflow-y-auto">

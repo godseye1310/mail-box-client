@@ -7,6 +7,7 @@ import {
 } from "react";
 import useAuth from "./auth-context";
 import axios from "axios";
+import useFetch from "../hooks/useFetch";
 
 const MailboxContext = createContext();
 
@@ -18,35 +19,36 @@ export const MailboxProvider = ({ children }) => {
 
 	const [sentMails, setSentMails] = useState([]);
 
+	// Replacing @ and . with underscores
+	const cleanUserEmail = userEmail.replace(/[@.]/g, "_"); // Cleaning user's email
+
+	const { fetchData: getInbox, error: InboxErr } = useFetch(
+		`${RTDB_URL}/${cleanUserEmail}/Inbox.json`,
+		"GET"
+	);
 	const fetchInbox = useCallback(async () => {
-		// Replacing @ and . with underscores
-		const cleanUserEmail = userEmail.replace(/[@.]/g, "_"); // Cleaning sender's email
-
 		try {
-			const response = await axios.get(
-				`${RTDB_URL}/${cleanUserEmail}/Inbox.json`
-			);
-
-			// console.log(response.data);
+			const data = await getInbox();
+			// console.log(data);
 			console.log("inbox fetch successfull");
 
 			let fetchedInbox = [];
-			if (response.data) {
-				fetchedInbox = Object.keys(response.data).map((key) => {
-					return { ...response.data[key], id: key };
+			if (data) {
+				fetchedInbox = Object.keys(data).map((key) => {
+					return { ...data[key], id: key };
 				});
-				// console.log(inboxList);
+				// console.log(fetchedInbox);
 				if (fetchedInbox.length !== inbox.length) {
 					console.log(fetchedInbox.length, inbox.length);
-
 					setInbox(fetchedInbox);
 					console.log("inbox updated");
 				}
 			}
 		} catch (error) {
-			console.log(error.response);
+			// console.log(error.response);
+			console.log(InboxErr);
 		}
-	}, [userEmail, inbox]);
+	}, [inbox, getInbox, InboxErr]);
 
 	useEffect(() => {
 		let fetchInterval;
@@ -69,15 +71,11 @@ export const MailboxProvider = ({ children }) => {
 		if (read.isRead) {
 			return;
 		}
-
-		// Replacing @ and . with underscores
-		const cleanUserEmail = userEmail.replace(/[@.]/g, "_"); // Cleaning sender's email
 		try {
 			const response = await axios.patch(
 				`${RTDB_URL}/${cleanUserEmail}/Inbox/${id}.json`,
 				{ isRead: true }
 			);
-
 			console.log(response.status, "Mark as Read");
 			if (response.statusText === "OK") {
 				setInbox((prevInbox) =>
@@ -93,54 +91,63 @@ export const MailboxProvider = ({ children }) => {
 		}
 	};
 
-	const mailDeleteHandler = async (id) => {
-		console.log(id);
-		const cleanUserEmail = userEmail.replace(/[@.]/g, "_"); // Cleaning sender's email
+	//Delete Mails from Mailbox
+	const mailDeleteHandler = async (id, boxPath) => {
+		// console.log(id);
 		try {
 			const response = await axios.delete(
-				`${RTDB_URL}/${cleanUserEmail}/Inbox/${id}.json`
+				`${RTDB_URL}/${cleanUserEmail}/${boxPath}/${id}.json`
 			);
 			console.log(response.status, "e-mail Deleted");
-
 			if (response.statusText === "OK") {
-				setInbox((prevInbox) =>
-					prevInbox.filter((mail) => !(mail.id === id))
-				);
+				if (boxPath === "Inbox") {
+					setInbox((prevInbox) =>
+						prevInbox.filter((mail) => !(mail.id === id))
+					);
+				} else {
+					setSentMails((prevSent) =>
+						prevSent.filter((mail) => !(mail.id === id))
+					);
+				}
 			}
 		} catch (error) {
 			console.log(error);
 		}
 	};
 
+	// Sent Mail Updates
+	const addSentMail = (newSent) => {
+		// console.log(newSent);
+		setSentMails((prevSent) => [...prevSent, newSent]);
+	};
+	const { fetchData: getSentMails, error: sentMailErr } = useFetch(
+		`${RTDB_URL}/${cleanUserEmail}/SentBox.json`,
+		"GET"
+	);
 	useEffect(() => {
-		const fetchInbox = async () => {
-			// Replacing @ and . with underscores
-			const cleanUserEmail = userEmail.replace(/[@.]/g, "_"); // Cleaning sender's email
-
+		const fetchSentbox = async () => {
 			try {
-				const response = await axios.get(
-					`${RTDB_URL}/${cleanUserEmail}/SentBox.json`
-				);
-
-				// console.log(response.data);
+				const data = await getSentMails();
+				// console.log(data);
 				console.log("sentBox fetch successfull");
 				let sentboxList = [];
-				if (response.data) {
-					sentboxList = Object.keys(response.data).map((key) => {
-						return { ...response.data[key], id: key };
+				if (data) {
+					sentboxList = Object.keys(data).map((key) => {
+						return { ...data[key], id: key };
 					});
 					// console.log(inboxList);
 					setSentMails(sentboxList);
 				}
 			} catch (error) {
-				console.log(error.response);
+				console.log(sentMailErr);
+				// console.log(error.response);
 			}
 		};
 
 		if (isLoggedIn) {
-			fetchInbox();
+			fetchSentbox();
 		}
-	}, [isLoggedIn, userEmail]);
+	}, [isLoggedIn, getSentMails, sentMailErr]);
 
 	return (
 		<MailboxContext.Provider
@@ -149,6 +156,7 @@ export const MailboxProvider = ({ children }) => {
 				handleMarkasRead,
 				mailDeleteHandler,
 				sentMails,
+				addSentMail,
 			}}
 		>
 			{children}
