@@ -20,7 +20,7 @@ export const MailboxProvider = ({ children }) => {
 	const [sentMails, setSentMails] = useState([]);
 
 	// Replacing @ and . with underscores
-	const cleanUserEmail = userEmail.replace(/[@.]/g, "_"); // Cleaning user's email
+	const cleanUserEmail = userEmail ? userEmail.replace(/[@.]/g, "_") : ""; // Cleaning user's email
 
 	const { fetchData: getInbox, error: InboxErr } = useFetch(
 		`${RTDB_URL}/${cleanUserEmail}/Inbox.json`,
