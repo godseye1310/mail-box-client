@@ -1,12 +1,10 @@
 import React, { lazy, Suspense } from "react";
 import {
-	createBrowserRouter,
+	// createBrowserRouter,
 	createHashRouter,
 	Navigate,
 	RouterProvider,
 } from "react-router-dom";
-
-import { HashRouter as Router } from "react-router-dom";
 
 import RootLayout from "./components/Layout/RootLayout";
 
