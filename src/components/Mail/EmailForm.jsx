@@ -1,10 +1,11 @@
 import React, { useState } from "react";
 import useAuth from "../../store/auth-context";
-import axios from "axios";
+import useMailbox from "../../store/mailbox-context";
 import { EditorState } from "draft-js";
 import { convertToHTML } from "draft-convert";
 
 import MessageInput from "../UI/MessageInput";
+import useFetch from "../../hooks/useFetch";
 
 const RTDB_URL = `https://mail-box-client-38ab9-default-rtdb.asia-southeast1.firebasedatabase.app`;
 
@@ -15,6 +16,21 @@ const EmailForm = () => {
 		EditorState.createEmpty()
 	);
 	const { userEmail } = useAuth(); // Getting the email of the logged-in user (sender's email)
+	const { addSentMail } = useMailbox();
+
+	// Clean the email address for use in the Firebase path
+	const cleanEmail = email.replace(/[@.]/g, "_"); // Replacing @ and . with underscores
+	const cleanUserEmail = userEmail.replace(/[@.]/g, "_"); // Cleaning sender's email
+
+	// Use the useFetch hook to send the email
+	const { fetchData: sendReceiverEmail } = useFetch(
+		`${RTDB_URL}/users/${cleanEmail}/Inbox.json`,
+		"POST"
+	);
+	const { fetchData: sendSenderMailRef } = useFetch(
+		`${RTDB_URL}/users/${cleanUserEmail}/SentBox.json`,
+		"POST"
+	);
 
 	const sendEmailHandler = async (event) => {
 		event.preventDefault();
@@ -23,11 +39,6 @@ const EmailForm = () => {
 		const messageContent = convertToHTML(
 			messageEditorState.getCurrentContent()
 		);
-
-		// Clean the email address for use in the Firebase path
-		const cleanEmail = email.replace(/[@.]/g, "_"); // Replacing @ and . with underscores
-		const cleanUserEmail = userEmail.replace(/[@.]/g, "_"); // Cleaning sender's email
-
 		// Create the email data object
 		const emailData = {
 			to: email,
@@ -39,22 +50,18 @@ const EmailForm = () => {
 
 		try {
 			// Store in the receiver's Inbox
-			const receiverResponse = await axios.post(
-				`${RTDB_URL}/users/${cleanEmail}/Inbox.json`,
-				{ ...emailData, isRead: false }
-			);
-			const emailId = receiverResponse.data.name; // Use Firebase response ID
+			const receiverResponseData = await sendReceiverEmail(emailData);
+			const emailId = receiverResponseData.name; // Use Firebase response ID
 
 			console.log("sending Mail");
 
 			// Store in the sender's SentBox
-			await axios.post(
-				`${RTDB_URL}/users/${cleanUserEmail}/SentBox.json`,
-				{
-					...emailData,
-					emailId, // Optionally store the emailId for reference
-				}
-			);
+			const senderResponseData = await sendSenderMailRef({
+				...emailData,
+				emailId, // Optionally store the emailId for reference
+			});
+			const id = senderResponseData.name;
+			addSentMail({ ...emailData, id, emailId });
 
 			console.log("sending mail successfully", emailId);
 
