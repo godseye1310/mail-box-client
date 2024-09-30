@@ -149,6 +149,13 @@ export const MailboxProvider = ({ children }) => {
 		}
 	}, [isLoggedIn, getSentMails, sentMailErr]);
 
+	useEffect(() => {
+		if (!isLoggedIn) {
+			setInbox([]);
+			setSentMails([]);
+		}
+	}, [isLoggedIn]);
+
 	return (
 		<MailboxContext.Provider
 			value={{
@@ -157,6 +164,9 @@ export const MailboxProvider = ({ children }) => {
 				mailDeleteHandler,
 				sentMails,
 				addSentMail,
+
+				setInbox,
+				setSentMails,
 			}}
 		>
 			{children}
