@@ -5,7 +5,7 @@ import Input from "../UI/Input";
 import useAuth from "../../store/auth-context";
 import { useNavigate } from "react-router-dom";
 
-const API_KEY = "AIzaSyB84u4X10RE3cGQMqs7sibXk-m2JvzkMXg";
+const API_KEY = process.env.REACT_APP_GOOGLE_API_KEY;
 const SIGNUP_URL = `https://identitytoolkit.googleapis.com/v1/accounts:signUp?key=${API_KEY}`;
 const SIGNIN_URL = `https://identitytoolkit.googleapis.com/v1/accounts:signInWithPassword?key=${API_KEY}`;
 
