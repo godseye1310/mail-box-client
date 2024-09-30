@@ -1,9 +1,12 @@
 import React, { lazy, Suspense } from "react";
 import {
 	createBrowserRouter,
+	createHashRouter,
 	Navigate,
 	RouterProvider,
 } from "react-router-dom";
+
+import { HashRouter as Router } from "react-router-dom";
 
 import RootLayout from "./components/Layout/RootLayout";
 
@@ -21,14 +24,14 @@ const MailView = lazy(() => import("./components/Mail/MailView"));
 const App = () => {
 	const { isLoggedIn } = useAuth();
 
-	const router = createBrowserRouter([
+	const router = createHashRouter([
 		{
 			path: "/",
 			element: <RootLayout />,
 			id: "root",
 			children: [
 				{
-					path: "/",
+					path: "",
 					element: (
 						<Suspense fallback={null}>
 							{" "}
@@ -41,7 +44,7 @@ const App = () => {
 					),
 				},
 				{
-					path: "/home",
+					path: "home",
 					element: (
 						<Suspense fallback={<Loader />}>
 							{isLoggedIn ? <Home /> : <Navigate to="/" />}
@@ -95,14 +98,14 @@ const App = () => {
 					],
 				},
 				{
-					path: "/about",
+					path: "about",
 					element: <About />,
 				},
 
 				...(isLoggedIn
 					? [
 							{
-								path: "/mail",
+								path: "mail",
 								element: (
 									<Suspense fallback={<Loader />}>
 										<MailPage />
@@ -116,7 +119,11 @@ const App = () => {
 			],
 		},
 	]);
-	return <RouterProvider router={router} />;
+	return (
+		<>
+			<RouterProvider router={router} />
+		</>
+	);
 };
 
 export default App;
