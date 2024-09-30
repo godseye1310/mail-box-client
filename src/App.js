@@ -4,16 +4,12 @@ import {
 	Navigate,
 	RouterProvider,
 } from "react-router-dom";
-// import SignInPage from "./pages/SignInPage";
+
 import RootLayout from "./components/Layout/RootLayout";
-// import Home from "./pages/Home";
-// import MailPage from "./pages/MailPage";
+
 import useAuth from "./store/auth-context";
 import About from "./pages/About";
 import Loader from "./components/UI/Loader";
-// import Inbox from "./pages/Inbox";
-// import Sentbox from "./pages/Sentbox";
-// import MailView from "./components/Mail/MailView";
 
 const SignInPage = lazy(() => import("./pages/SignInPage"));
 const Home = lazy(() => import("./pages/Home"));
